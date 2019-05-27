@@ -30,7 +30,7 @@
   comp.compression FAQ.
 --*/
 
-UInt32 BZ2_crc32Table[256] = {
+static const UInt32 table[256] = {
 
    /*-- Ugly, innit? --*/
 
@@ -115,7 +115,7 @@ BZ2_finalise_crc (UInt32 *crcVar)
 void
 BZ2_update_crc (UInt32 *crcVar, UChar cha)
 {
-    *crcVar = (*crcVar << 8) ^ BZ2_crc32Table[(*crcVar >> 24) ^ cha];
+    *crcVar = (*crcVar << 8) ^ table[(*crcVar >> 24) ^ cha];
 }
 
 

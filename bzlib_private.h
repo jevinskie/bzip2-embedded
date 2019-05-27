@@ -152,8 +152,6 @@ extern Int32 BZ2_rNums[512];
 
 /*-- Stuff for doing CRCs. --*/
 
-extern UInt32 BZ2_crc32Table[256];
-
 extern void BZ2_initialise_crc (UInt32 *crcVar);
 
 extern void BZ2_finalise_crc (UInt32 *crcVar);
