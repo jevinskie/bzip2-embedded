@@ -2550,7 +2550,7 @@ new one, naming these files:
 <computeroutput>blocksort.c</computeroutput>,
 <computeroutput>bzlib.c</computeroutput>,
 <computeroutput>compress.c</computeroutput>,
-<computeroutput>crctable.c</computeroutput>,
+<computeroutput>crc32.c</computeroutput>,
 <computeroutput>decompress.c</computeroutput>,
 <computeroutput>huffman.c</computeroutput>,
 <computeroutput>randtable.c</computeroutput> and

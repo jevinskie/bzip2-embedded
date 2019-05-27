@@ -28,7 +28,7 @@ CFLAGS=-fpic -fPIC -Wall -Winline -O2 -g $(BIGFILES)
 
 OBJS= blocksort.o  \
       huffman.o    \
-      crctable.o   \
+      crc32.o      \
       randtable.o  \
       compress.o   \
       decompress.o \
@@ -47,8 +47,8 @@ blocksort.o: blocksort.c
 	$(CC) $(CFLAGS) -c blocksort.c
 huffman.o: huffman.c
 	$(CC) $(CFLAGS) -c huffman.c
-crctable.o: crctable.c
-	$(CC) $(CFLAGS) -c crctable.c
+crc32.o: crc32.c
+	$(CC) $(CFLAGS) -c crc32.c
 randtable.o: randtable.c
 	$(CC) $(CFLAGS) -c randtable.c
 compress.o: compress.c
