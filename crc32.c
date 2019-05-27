@@ -101,19 +101,19 @@ UInt32 BZ2_crc32Table[256] = {
 };
 
 void
-BZ_INITIALISE_CRC (UInt32 *crcVar)
+BZ2_initialise_crc (UInt32 *crcVar)
 {
     *crcVar = 0xffffffffL;
 }
 
 void
-BZ_FINALISE_CRC (UInt32 *crcVar)
+BZ2_finalise_crc (UInt32 *crcVar)
 {
     *crcVar = ~(*crcVar);
 }
 
 void
-BZ_UPDATE_CRC (UInt32 *crcVar, UChar cha)
+BZ2_update_crc (UInt32 *crcVar, UChar cha)
 {
     *crcVar = (*crcVar << 8) ^ BZ2_crc32Table[(*crcVar >> 24) ^ cha];
 }
