@@ -517,7 +517,7 @@ Int32 BZ2_decompress ( DState* s )
 
       s->state_out_len = 0;
       s->state_out_ch  = 0;
-      BZ_INITIALISE_CRC ( &s->calculatedBlockCRC );
+      BZ2_initialise_crc ( &s->calculatedBlockCRC );
       s->state = BZ_X_OUTPUT;
       if (s->verbosity >= 2) VPrintf0 ( "rt+rld" );
 
