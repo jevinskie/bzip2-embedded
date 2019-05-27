@@ -1,3 +1,5 @@
+/* -*- Mode: C; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* vim: set sw=4 sts=4 expandtab: */
 
 /*-------------------------------------------------------------*/
 /*--- Table for doing CRCs                                  ---*/
@@ -11,7 +13,7 @@
    bzip2/libbzip2 version 1.0.6 of 6 September 2010
    Copyright (C) 1996-2010 Julian Seward <jseward@bzip.org>
 
-   Please read the WARNING, DISCLAIMER and PATENTS sections in the 
+   Please read the WARNING, DISCLAIMER and PATENTS sections in the
    README file.
 
    This program is released under the terms of the license contained
@@ -97,6 +99,24 @@ UInt32 BZ2_crc32Table[256] = {
    0xafb010b1L, 0xab710d06L, 0xa6322bdfL, 0xa2f33668L,
    0xbcb4666dL, 0xb8757bdaL, 0xb5365d03L, 0xb1f740b4L
 };
+
+void
+BZ_INITIALISE_CRC (UInt32 *crcVar)
+{
+    *crcVar = 0xffffffffL;
+}
+
+void
+BZ_FINALISE_CRC (UInt32 *crcVar)
+{
+    *crcVar = ~(*crcVar);
+}
+
+void
+BZ_UPDATE_CRC (UInt32 *crcVar, UChar cha)
+{
+    *crcVar = (*crcVar << 8) ^ BZ2_crc32Table[(*crcVar >> 24) ^ cha];
+}
 
 
 /*-------------------------------------------------------------*/
