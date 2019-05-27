@@ -108,7 +108,7 @@ SOURCE=.\compress.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\crctable.c
+SOURCE=.\crc32.c
 # End Source File
 # Begin Source File
 

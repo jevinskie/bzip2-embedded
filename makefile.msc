@@ -8,7 +8,7 @@ CFLAGS= -DWIN32 -MD -Ox -D_FILE_OFFSET_BITS=64 -nologo
 
 OBJS= blocksort.obj  \
       huffman.obj    \
-      crctable.obj   \
+      crc32.obj   \
       randtable.obj  \
       compress.obj   \
       decompress.obj \
