@@ -154,23 +154,11 @@ extern Int32 BZ2_rNums[512];
 
 extern UInt32 BZ2_crc32Table[256];
 
-#define BZ_INITIALISE_CRC(crcVar)              \
-{                                              \
-   crcVar = 0xffffffffL;                       \
-}
+extern void BZ_INITIALISE_CRC (UInt32 *crcVar);
 
-#define BZ_FINALISE_CRC(crcVar)                \
-{                                              \
-   crcVar = ~(crcVar);                         \
-}
+extern void BZ_FINALISE_CRC (UInt32 *crcVar);
 
-#define BZ_UPDATE_CRC(crcVar,cha)              \
-{                                              \
-   crcVar = (crcVar << 8) ^                    \
-            BZ2_crc32Table[(crcVar >> 24) ^    \
-                           ((UChar)cha)];      \
-}
-
+extern void BZ_UPDATE_CRC(UInt32 *crcVar, UChar cha);
 
 
 /*-- States and modes for compression. --*/
