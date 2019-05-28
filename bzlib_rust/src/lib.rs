@@ -4,7 +4,7 @@ use crc::{crc32, Hasher32};
 
 pub fn crc32fast_buffer(buf: &[u8]) -> u32 {
     // This is the initial value from bzlib
-    let mut digest = crc32::Digest::new_with_initial(0x04c11db7, 0xffffffff);
+    let mut digest = crc32::Digest::new_custom(crc32::IEEE, !0u32, !0u32, crc::CalcType::Normal);
     digest.write(buf);
     digest.sum32()
 }
