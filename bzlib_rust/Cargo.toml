@@ -1,0 +1,13 @@
+[package]
+name = "bzlib_rust"
+version = "0.0.1"
+authors = ["Federico Mena Quintero <federico@gnome.org>"]
+workspace = "../"
+edition = "2018"
+
+[lib]
+name = "bzlib_rust"
+crate-type = ["staticlib"]
+
+[dependencies]
+crc = "1.8.1"

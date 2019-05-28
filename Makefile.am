@@ -36,6 +36,58 @@ bin_SCRIPTS = bzgrep bzmore bzdiff
 
 man_MANS = bzip2.1 bzgrep.1 bzmore.1 bzdiff.1
 
+NULL =
+
+RUST_SRC =			\
+	Cargo.toml		\
+	bzlib_rust/Cargo.toml	\
+	$(NULL)
+
+RUST_EXTRA =			\
+	Cargo.lock		\
+	cargo-vendor-config	\
+	$(NULL)
+
+if DEBUG_RELEASE
+CARGO_RELEASE_ARGS=
+else
+CARGO_RELEASE_ARGS=--release
+endif
+
+if CROSS_COMPILING
+CARGO_TARGET_ARGS=--target=$(RUST_TARGET)
+endif
+
+CARGO_VERBOSE = $(cargo_verbose_$(V))
+cargo_verbose_ = $(cargo_verbose_$(AM_DEFAULT_VERBOSITY))
+cargo_verbose_0 =
+cargo_verbose_1 = --verbose
+
+RUST_LIB=@abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/libbzlib_rust.a
+CARGO_TARGET_DIR=@abs_top_builddir@/target
+
+check-local:
+	cd $(srcdir) && \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) $(CARGO) --locked test $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
+
+clean-local:
+	cd $(top_srcdir) && \
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) $(CARGO) clean
+
+dist-hook:
+	(cd $(distdir) &&							\
+	$(CARGO) vendor -q &&							\
+	mkdir .cargo &&								\
+	cp cargo-vendor-config .cargo/config)
+
+$(RUST_LIB): $(RUST_SRC)
+	+cd $(top_srcdir)/bzlib_rust &&						\
+	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR)					\
+	$(CARGO) --locked build $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
+
+libbz2_la_LIBADD =	\
+	$(RUST_LIB)
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = bzip2.pc
 
@@ -105,6 +157,8 @@ manual.html: $(MANUAL_SRCS)
 	cd $(srcdir); ./xmlproc.sh -html manual.xml
 
 EXTRA_DIST = \
+	$(RUST_SRC) \
+	$(RUST_EXTRA) \
 	$(bin_SCRIPTS) \
 	$(man_MANS) \
 	README.autotools \

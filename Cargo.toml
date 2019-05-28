@@ -1,0 +1,11 @@
+[workspace]
+members = [
+    "bzlib_rust",
+]
+
+[profile.release]
+lto = true
+debug = true
+
+[profile.bench]
+lto = true
