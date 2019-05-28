@@ -2,8 +2,7 @@
 
 use crc::{crc32, Hasher32};
 
-pub fn crc32fast_buffer(buf: &[u8]) -> u32 {
-    // This is the initial value from bzlib
+pub fn crc32_buffer(buf: &[u8]) -> u32 {
     let mut digest = crc32::Digest::new_custom(crc32::IEEE, !0u32, !0u32, crc::CalcType::Normal);
     digest.write(buf);
     digest.sum32()
@@ -14,7 +13,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn crc32_hashes() {
+    fn crc32_hashes_match_c_implementation() {
         let buf1 = "";
         let buf2 = " ";
         let buf3 = "hello world";
@@ -28,9 +27,11 @@ mod tests {
                     "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ",
                     "mollit anim id est laborum.");
 
-        assert_eq!(crc32fast_buffer(buf1.as_bytes()), 0x00000000);
-        assert_eq!(crc32fast_buffer(buf2.as_bytes()), 0x29d4f6ab);
-        assert_eq!(crc32fast_buffer(buf3.as_bytes()), 0x44f71378);
-        assert_eq!(crc32fast_buffer(buf4.as_bytes()), 0xd31de6c9);
+        // These are values obtained from the original C implementation
+        // of BZ2_initialise_crc() / BZ2_update_crc() / BZ2_finalise_crc().
+        assert_eq!(crc32_buffer(buf1.as_bytes()), 0x00000000);
+        assert_eq!(crc32_buffer(buf2.as_bytes()), 0x29d4f6ab);
+        assert_eq!(crc32_buffer(buf3.as_bytes()), 0x44f71378);
+        assert_eq!(crc32_buffer(buf4.as_bytes()), 0xd31de6c9);
     }
 }
