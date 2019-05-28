@@ -7,17 +7,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "bzlib_rust"
 version = "0.0.1"
 dependencies = [
- "crc 1.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "crc 1.8.1 (git+https://github.com/mrhooray/crc-rs)",
 ]
 
 [[package]]
 name = "crc"
 version = "1.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
+source = "git+https://github.com/mrhooray/crc-rs#b91a0a952387423cd0b026ce4522177f2e57498f"
 dependencies = [
  "build_const 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [metadata]
 "checksum build_const 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "39092a32794787acd8525ee150305ff051b0aa6cc2abaf193924f5ab05425f39"
-"checksum crc 1.8.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d663548de7f5cca343f1e0a48d14dcfb0e9eb4e079ec58883b7251539fa10aeb"
+"checksum crc 1.8.1 (git+https://github.com/mrhooray/crc-rs)" = "<none>"
