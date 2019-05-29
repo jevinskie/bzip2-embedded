@@ -9,6 +9,6 @@ edition = "2018"
 name = "bzlib_rust"
 crate-type = ["staticlib"]
 
-[dependencies]
+[dev-dependencies]
 crc = { git = "https://github.com/mrhooray/crc-rs" }
 

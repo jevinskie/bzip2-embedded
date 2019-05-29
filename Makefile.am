@@ -41,6 +41,8 @@ NULL =
 RUST_SRC =			\
 	Cargo.toml		\
 	bzlib_rust/Cargo.toml	\
+	bzlib_rust/src/crc32.rs	\
+	bzlib_rust/src/lib.rs	\
 	$(NULL)
 
 RUST_EXTRA =			\
