@@ -24,10 +24,13 @@ LT_INIT([disable-static pic-only])
 PKG_PROG_PKG_CONFIG
 gl_VISIBILITY
 
-# Check if -ldl is needed to use dlopen()
+# Check if -ldl is needed to use dlopen() - Rust's stdlib requires this
 AC_CHECK_FUNC(dlopen, [],
               [AC_CHECK_LIB(dl, dlopen, [DLOPEN_LIBS=-ldl])])
 AC_SUBST(DLOPEN_LIBS)
+
+# Check for pthread - Rust's stdlib requires this
+AX_PTHREAD
 
 # Check for system features.
 AC_SYS_LARGEFILE
