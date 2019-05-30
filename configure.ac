@@ -23,11 +23,11 @@ AC_PROG_MAKE_SET
 LT_INIT([disable-static pic-only])
 PKG_PROG_PKG_CONFIG
 gl_VISIBILITY
-# Checks for libraries.
 
-# Checks for header files.
-
-# Checks for typedefs, structures, and compiler characteristics.
+# Check if -ldl is needed to use dlopen()
+AC_CHECK_FUNC(dlopen, [],
+              [AC_CHECK_LIB(dl, dlopen, [DLOPEN_LIBS=-ldl])])
+AC_SUBST(DLOPEN_LIBS)
 
 # Check for system features.
 AC_SYS_LARGEFILE
