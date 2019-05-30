@@ -87,7 +87,9 @@ $(RUST_LIB): $(RUST_SRC)
 	$(CARGO) --locked build $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
 
 libbz2_la_LIBADD =	\
-	$(RUST_LIB)
+	$(RUST_LIB)	\
+	$(DLOPEN_LIBS)	\
+	$(NULL)
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = bzip2.pc
