@@ -12,6 +12,10 @@ libbz2_la_LDFLAGS = \
 	-version-info $(BZIP2_LT_CURRENT):$(BZIP2_LT_REVISION):$(BZIP2_LT_AGE) \
 	-no-undefined
 
+libbz2_la_CFLAGS = 		\
+	$(PTHREAD_CFLAGS) 	\
+	$(NULL)
+
 crc32test_SOURCES = \
 	crc32test.c
 
@@ -88,6 +92,7 @@ $(RUST_LIB): $(RUST_SRC)
 
 libbz2_la_LIBADD =	\
 	$(RUST_LIB)	\
+	$(PTHREAD_LIBS)	\
 	$(DLOPEN_LIBS)	\
 	$(NULL)
 
