@@ -71,9 +71,23 @@ cargo_verbose_1 = --verbose
 RUST_LIB=@abs_top_builddir@/target/@RUST_TARGET_SUBDIR@/libbzlib_rust.a
 CARGO_TARGET_DIR=@abs_top_builddir@/target
 
-check-local:
+check-local: bzip2
 	cd $(srcdir) && \
 	CARGO_TARGET_DIR=$(CARGO_TARGET_DIR) $(CARGO) --locked test $(CARGO_VERBOSE) $(CARGO_TARGET_ARGS) $(CARGO_RELEASE_ARGS)
+	@cat $(srcdir)/words1
+	./bzip2 -1  <$(srcdir)/sample1.ref >sample1.rb2
+	./bzip2 -2  <$(srcdir)/sample2.ref >sample2.rb2
+	./bzip2 -3  <$(srcdir)/sample3.ref >sample3.rb2
+	./bzip2 -d  <$(srcdir)/sample1.bz2 >sample1.tst
+	./bzip2 -d  <$(srcdir)/sample2.bz2 >sample2.tst
+	./bzip2 -ds <$(srcdir)/sample3.bz2 >sample3.tst
+	cmp $(srcdir)/sample1.bz2 sample1.rb2
+	cmp $(srcdir)/sample2.bz2 sample2.rb2
+	cmp $(srcdir)/sample3.bz2 sample3.rb2
+	cmp sample1.tst $(srcdir)/sample1.ref
+	cmp sample2.tst $(srcdir)/sample2.ref
+	cmp sample3.tst $(srcdir)/sample3.ref
+	@cat $(srcdir)/words3
 
 clean-local:
 	cd $(top_srcdir) && \
@@ -136,22 +150,6 @@ uninstall-hook:
 	rm -f $(DESTDIR)$(mandir)/man1/`echo "bzfgrep" | sed 's,^.*/,,;$(transform)'`.1
 	rm -f $(DESTDIR)$(mandir)/man1/`echo "bzless" | sed 's,^.*/,,;$(transform)'`.1
 	rm -f $(DESTDIR)$(mandir)/man1/`echo "bzcmp" | sed 's,^.*/,,;$(transform)'`.1
-
-test: bzip2
-	@cat $(srcdir)/words1
-	./bzip2 -1  <$(srcdir)/sample1.ref >sample1.rb2
-	./bzip2 -2  <$(srcdir)/sample2.ref >sample2.rb2
-	./bzip2 -3  <$(srcdir)/sample3.ref >sample3.rb2
-	./bzip2 -d  <$(srcdir)/sample1.bz2 >sample1.tst
-	./bzip2 -d  <$(srcdir)/sample2.bz2 >sample2.tst
-	./bzip2 -ds <$(srcdir)/sample3.bz2 >sample3.tst
-	cmp $(srcdir)/sample1.bz2 sample1.rb2
-	cmp $(srcdir)/sample2.bz2 sample2.rb2
-	cmp $(srcdir)/sample3.bz2 sample3.rb2
-	cmp sample1.tst $(srcdir)/sample1.ref
-	cmp sample2.tst $(srcdir)/sample2.ref
-	cmp sample3.tst $(srcdir)/sample3.ref
-	@cat $(srcdir)/words3
 
 manual: $(srcdir)/manual.html $(srcdir)/manual.ps $(srcdir)/manual.pdf
 
