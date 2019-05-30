@@ -16,18 +16,11 @@ libbz2_la_CFLAGS = 		\
 	$(PTHREAD_CFLAGS) 	\
 	$(NULL)
 
-crc32test_SOURCES = \
-	crc32test.c
-
 include_HEADERS = bzlib.h
 
 noinst_HEADERS = bzlib_private.h
 
 bin_PROGRAMS = bzip2 bzip2recover
-
-noinst_PROGRAMS = crc32test
-
-crc32test_LDADD = libbz2.la
 
 bzip2_SOURCES = bzip2.c
 bzip2_LDADD = libbz2.la
