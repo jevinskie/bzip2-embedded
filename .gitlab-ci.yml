@@ -1,0 +1,7 @@
+image: "rust:latest"
+
+test:cargo:
+  script:
+  - ./autogen.sh
+  - ./configure
+  - make check-local
