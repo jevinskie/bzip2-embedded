@@ -3,7 +3,6 @@ lib_LTLIBRARIES = libbz2.la
 libbz2_la_SOURCES = \
 	blocksort.c \
 	huffman.c \
-	randtable.c \
 	compress.c \
 	decompress.c \
 	bzlib.c
@@ -34,11 +33,12 @@ man_MANS = bzip2.1 bzgrep.1 bzmore.1 bzdiff.1
 
 NULL =
 
-RUST_SRC =			\
-	Cargo.toml		\
-	bzlib_rust/Cargo.toml	\
-	bzlib_rust/src/crc32.rs	\
-	bzlib_rust/src/lib.rs	\
+RUST_SRC =				\
+	Cargo.toml			\
+	bzlib_rust/Cargo.toml		\
+	bzlib_rust/src/crc32.rs		\
+	bzlib_rust/src/lib.rs		\
+	bzlib_rust/src/rand_table.rs	\
 	$(NULL)
 
 RUST_EXTRA =			\

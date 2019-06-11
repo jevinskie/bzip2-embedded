@@ -128,15 +128,19 @@ extern void bz_internal_error ( int errcode );
 
 /*-- Stuff for randomising repetitive blocks. --*/
 
+/* Keep this in sync with bzlib_rust/src/rand_rable.rs:RandState */
 typedef struct {
    Int32 rNToGo;
    Int32 rTPos;
 } RandState;
 
+/* Defined in bzlib_rust/src/rand_rable.rs */
 extern RandState BZ2_rand_init(void);
 
+/* Defined in bzlib_rust/src/rand_rable.rs */
 extern Int32 BZ2_rand_mask(RandState *r);
 
+/* Defined in bzlib_rust/src/rand_rable.rs */
 extern void BZ2_rand_update_mask(RandState *r);
 
 

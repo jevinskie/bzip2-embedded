@@ -1,29 +1,4 @@
-
-/*-------------------------------------------------------------*/
-/*--- Table for randomising repetitive blocks               ---*/
-/*---                                           randtable.c ---*/
-/*-------------------------------------------------------------*/
-
-/* ------------------------------------------------------------------
-   This file is part of bzip2/libbzip2, a program and library for
-   lossless, block-sorting data compression.
-
-   bzip2/libbzip2 version 1.0.6 of 6 September 2010
-   Copyright (C) 1996-2010 Julian Seward <jseward@acm.org>
-
-   Please read the WARNING, DISCLAIMER and PATENTS sections in the 
-   README file.
-
-   This program is released under the terms of the license contained
-   in the file LICENSE.
-   ------------------------------------------------------------------ */
-
-
-#include "bzlib_private.h"
-
-
-/*---------------------------------------------*/
-static const Int32 RAND_TABLE[512] = {
+const RAND_TABLE: [i32; 512] = [
    619, 720, 127, 481, 931, 816, 813, 233, 566, 247, 
    985, 724, 205, 454, 863, 491, 741, 242, 949, 214, 
    733, 859, 335, 708, 621, 574, 73, 654, 730, 472, 
@@ -76,36 +51,40 @@ static const Int32 RAND_TABLE[512] = {
    920, 176, 193, 713, 857, 265, 203, 50, 668, 108, 
    645, 990, 626, 197, 510, 357, 358, 850, 858, 364, 
    936, 638
-};
+];
 
-RandState
-BZ2_rand_init(void)
-{
-   RandState r;
-
-   r.rNToGo = 0;
-   r.rTPos  = 0;
-
-   return r;
+// Keep this in sync with bzlib_private.h:
+#[repr(C)]
+pub struct RandState {
+    rNToGo: i32,
+    rTPos: i32,
 }
 
-Int32
-BZ2_rand_mask(RandState *r)
-{
-   return (r->rNToGo == 1) ? 1 : 0;
+#[no_mangle]
+pub unsafe extern "C" fn BZ2_rand_init() -> RandState {
+    RandState {
+        rNToGo: 0,
+        rTPos: 0,
+    }
 }
 
-void
-BZ2_rand_update_mask(RandState *r)
-{
-   if (r->rNToGo == 0) {
-      r->rNToGo = RAND_TABLE[r->rTPos];
-      r->rTPos++;
-      if (r->rTPos == 512) r->rTPos = 0;
-   }
-   r->rNToGo--;
+#[no_mangle]
+pub unsafe extern "C" fn BZ2_rand_mask(r: &RandState) -> i32 {
+    if r.rNToGo == 1 {
+        1
+    } else {
+        0
+    }
 }
 
-/*-------------------------------------------------------------*/
-/*--- end                                       randtable.c ---*/
-/*-------------------------------------------------------------*/
+#[no_mangle]
+pub unsafe extern "C" fn BZ2_rand_update_mask(r: &mut RandState) {
+    if r.rNToGo == 0 {
+        r.rNToGo = RAND_TABLE[r.rTPos as usize];
+        r.rTPos += 1;
+        if r.rTPos == 512 {
+            r.rTPos = 0;
+        }
+    }
+    r.rNToGo -= 1;
+}
