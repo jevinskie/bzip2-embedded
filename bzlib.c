@@ -563,27 +563,27 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
          s->state_out_len = 1;
          s->state_out_ch = s->k0;
          BZ_GET_FAST(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          s->state_out_len = 2;
          BZ_GET_FAST(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          s->state_out_len = 3;
          BZ_GET_FAST(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          BZ_GET_FAST(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          s->state_out_len = ((Int32)k1) + 4;
          BZ_GET_FAST(s->k0); BZ_RAND_UPD_MASK; 
-         s->k0 ^= BZ_RAND_MASK; s->nblock_used++;
+         s->k0 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
       }
 
    } else {
@@ -733,27 +733,27 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
          s->state_out_len = 1;
          s->state_out_ch = s->k0;
          BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          s->state_out_len = 2;
          BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          s->state_out_len = 3;
          BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          if (s->nblock_used == s->save_nblock+1) continue;
          if (k1 != s->k0) { s->k0 = k1; continue; };
    
          BZ_GET_SMALL(k1); BZ_RAND_UPD_MASK; 
-         k1 ^= BZ_RAND_MASK; s->nblock_used++;
+         k1 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
          s->state_out_len = ((Int32)k1) + 4;
          BZ_GET_SMALL(s->k0); BZ_RAND_UPD_MASK; 
-         s->k0 ^= BZ_RAND_MASK; s->nblock_used++;
+         s->k0 ^= BZ2_rand_mask(&s->rand); s->nblock_used++;
       }
 
    } else {
