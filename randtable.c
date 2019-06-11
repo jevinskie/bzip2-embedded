@@ -78,6 +78,16 @@ Int32 BZ2_rNums[512] = {
    936, 638
 };
 
+RandState
+BZ2_rand_init(void)
+{
+   RandState r;
+
+   r.rNToGo = 0;
+   r.rTPos  = 0;
+
+   return r;
+}
 
 /*-------------------------------------------------------------*/
 /*--- end                                       randtable.c ---*/

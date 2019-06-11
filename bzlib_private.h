@@ -135,9 +135,7 @@ typedef struct {
    Int32 rTPos;
 } RandState;
 
-#define BZ_RAND_INIT_MASK                      \
-   s->rand.rNToGo = 0;                         \
-   s->rand.rTPos  = 0                          \
+extern RandState BZ2_rand_init(void);
 
 #define BZ_RAND_MASK ((s->rand.rNToGo == 1) ? 1 : 0)
 
