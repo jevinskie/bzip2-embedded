@@ -128,8 +128,6 @@ extern void bz_internal_error ( int errcode );
 
 /*-- Stuff for randomising repetitive blocks. --*/
 
-extern Int32 BZ2_rNums[512];
-
 typedef struct {
    Int32 rNToGo;
    Int32 rTPos;

@@ -23,7 +23,7 @@
 
 
 /*---------------------------------------------*/
-Int32 BZ2_rNums[512] = { 
+static const Int32 RAND_TABLE[512] = {
    619, 720, 127, 481, 931, 816, 813, 233, 566, 247, 
    985, 724, 205, 454, 863, 491, 741, 242, 949, 214, 
    733, 859, 335, 708, 621, 574, 73, 654, 730, 472, 
@@ -99,7 +99,7 @@ void
 BZ2_rand_update_mask(RandState *r)
 {
    if (r->rNToGo == 0) {
-      r->rNToGo = BZ2_rNums[r->rTPos];
+      r->rNToGo = RAND_TABLE[r->rTPos];
       r->rTPos++;
       if (r->rTPos == 512) r->rTPos = 0;
    }
