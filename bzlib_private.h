@@ -204,7 +204,6 @@ typedef
       /* run-length-encoding of the input */
       UInt32   state_in_ch;
       Int32    state_in_len;
-      RandState rand;
 
       /* input and output limits and current posns */
       Int32    nblock;
