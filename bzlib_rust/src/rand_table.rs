@@ -56,21 +56,21 @@ const RAND_TABLE: [i32; 512] = [
 // Keep this in sync with bzlib_private.h:
 #[repr(C)]
 pub struct RandState {
-    rNToGo: i32,
-    rTPos: i32,
+    n_to_go: i32,
+    table_pos: i32,
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn BZ2_rand_init() -> RandState {
     RandState {
-        rNToGo: 0,
-        rTPos: 0,
+        n_to_go: 0,
+        table_pos: 0,
     }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn BZ2_rand_mask(r: &RandState) -> i32 {
-    if r.rNToGo == 1 {
+    if r.n_to_go == 1 {
         1
     } else {
         0
@@ -79,12 +79,12 @@ pub unsafe extern "C" fn BZ2_rand_mask(r: &RandState) -> i32 {
 
 #[no_mangle]
 pub unsafe extern "C" fn BZ2_rand_update_mask(r: &mut RandState) {
-    if r.rNToGo == 0 {
-        r.rNToGo = RAND_TABLE[r.rTPos as usize];
-        r.rTPos += 1;
-        if r.rTPos == 512 {
-            r.rTPos = 0;
+    if r.n_to_go == 0 {
+        r.n_to_go = RAND_TABLE[r.table_pos as usize];
+        r.table_pos += 1;
+        if r.table_pos == 512 {
+            r.table_pos = 0;
         }
     }
-    r.rNToGo -= 1;
+    r.n_to_go -= 1;
 }
