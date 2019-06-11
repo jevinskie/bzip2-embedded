@@ -95,6 +95,17 @@ BZ2_rand_mask(RandState *r)
    return (r->rNToGo == 1) ? 1 : 0;
 }
 
+void
+BZ2_rand_update_mask(RandState *r)
+{
+   if (r->rNToGo == 0) {
+      r->rNToGo = BZ2_rNums[r->rTPos];
+      r->rTPos++;
+      if (r->rTPos == 512) r->rTPos = 0;
+   }
+   r->rNToGo--;
+}
+
 /*-------------------------------------------------------------*/
 /*--- end                                       randtable.c ---*/
 /*-------------------------------------------------------------*/

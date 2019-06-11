@@ -139,14 +139,7 @@ extern RandState BZ2_rand_init(void);
 
 extern Int32 BZ2_rand_mask(RandState *r);
 
-#define BZ_RAND_UPD_MASK				\
-   if (s->rand.rNToGo == 0) {				\
-      s->rand.rNToGo = BZ2_rNums[s->rand.rTPos];	\
-      s->rand.rTPos++;					\
-      if (s->rand.rTPos == 512) s->rand.rTPos = 0;	\
-   }							\
-   s->rand.rNToGo--;
-
+extern void BZ2_rand_update_mask(RandState *r);
 
 
 /*-- Stuff for doing CRCs. --*/
