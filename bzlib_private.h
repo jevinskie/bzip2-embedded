@@ -130,23 +130,24 @@ extern void bz_internal_error ( int errcode );
 
 extern Int32 BZ2_rNums[512];
 
-#define BZ_RAND_DECLS                          \
-   Int32 rNToGo;                               \
-   Int32 rTPos                                 \
+typedef struct {
+   Int32 rNToGo;
+   Int32 rTPos;
+} RandState;
 
 #define BZ_RAND_INIT_MASK                      \
-   s->rNToGo = 0;                              \
-   s->rTPos  = 0                               \
+   s->rand.rNToGo = 0;                         \
+   s->rand.rTPos  = 0                          \
 
-#define BZ_RAND_MASK ((s->rNToGo == 1) ? 1 : 0)
+#define BZ_RAND_MASK ((s->rand.rNToGo == 1) ? 1 : 0)
 
-#define BZ_RAND_UPD_MASK                       \
-   if (s->rNToGo == 0) {                       \
-      s->rNToGo = BZ2_rNums[s->rTPos];         \
-      s->rTPos++;                              \
-      if (s->rTPos == 512) s->rTPos = 0;       \
-   }                                           \
-   s->rNToGo--;
+#define BZ_RAND_UPD_MASK				\
+   if (s->rand.rNToGo == 0) {				\
+      s->rand.rNToGo = BZ2_rNums[s->rand.rTPos];	\
+      s->rand.rTPos++;					\
+      if (s->rand.rTPos == 512) s->rand.rTPos = 0;	\
+   }							\
+   s->rand.rNToGo--;
 
 
 
@@ -210,7 +211,7 @@ typedef
       /* run-length-encoding of the input */
       UInt32   state_in_ch;
       Int32    state_in_len;
-      BZ_RAND_DECLS;
+      RandState rand;
 
       /* input and output limits and current posns */
       Int32    nblock;
@@ -342,7 +343,7 @@ typedef
       UChar    state_out_ch;
       Int32    state_out_len;
       Bool     blockRandomised;
-      BZ_RAND_DECLS;
+      RandState rand;
 
       /* the buffer for bit stream reading */
       UInt32   bsBuff;
