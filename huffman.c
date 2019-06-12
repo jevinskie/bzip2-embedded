@@ -42,21 +42,22 @@ upheap(Int32 *heap, Int32 *weight, Int32 z)
    heap[zz] = tmp;
 }
 
-#define DOWNHEAP(z)                                   \
-{                                                     \
-   Int32 zz, yy, tmp;                                 \
-   zz = z; tmp = heap[zz];                            \
-   while (True) {                                     \
-      yy = zz << 1;                                   \
-      if (yy > nHeap) break;                          \
-      if (yy < nHeap &&                               \
-          weight[heap[yy+1]] < weight[heap[yy]])      \
-         yy++;                                        \
-      if (weight[tmp] < weight[heap[yy]]) break;      \
-      heap[zz] = heap[yy];                            \
-      zz = yy;                                        \
-   }                                                  \
-   heap[zz] = tmp;                                    \
+static void
+downheap(Int32 *heap, Int32 *weight, Int32 nHeap, Int32 z)
+{
+   Int32 zz, yy, tmp;
+   zz = z; tmp = heap[zz];
+   while (True) {
+      yy = zz << 1;
+      if (yy > nHeap) break;
+      if (yy < nHeap &&
+          weight[heap[yy+1]] < weight[heap[yy]])
+         yy++;
+      if (weight[tmp] < weight[heap[yy]]) break;
+      heap[zz] = heap[yy];
+      zz = yy;
+   }
+   heap[zz] = tmp;
 }
 
 
@@ -99,8 +100,8 @@ void BZ2_hbMakeCodeLengths ( UChar *len,
       AssertH( nHeap < (BZ_MAX_ALPHA_SIZE+2), 2001 );
    
       while (nHeap > 1) {
-         n1 = heap[1]; heap[1] = heap[nHeap]; nHeap--; DOWNHEAP(1);
-         n2 = heap[1]; heap[1] = heap[nHeap]; nHeap--; DOWNHEAP(1);
+	 n1 = heap[1]; heap[1] = heap[nHeap]; nHeap--; downheap(heap, weight, nHeap, 1);
+         n2 = heap[1]; heap[1] = heap[nHeap]; nHeap--; downheap(heap, weight, nHeap, 1);
          nNodes++;
          parent[n1] = parent[n2] = nNodes;
          weight[nNodes] = ADDWEIGHTS(weight[n1], weight[n2]);
