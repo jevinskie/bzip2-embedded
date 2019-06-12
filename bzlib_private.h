@@ -130,8 +130,8 @@ extern void bz_internal_error ( int errcode );
 
 /* Keep this in sync with bzlib_rust/src/rand_rable.rs:RandState */
 typedef struct {
-   Int32 n_to_go;
-   Int32 table_pos;
+   UInt16 n_to_go;
+   UInt16 table_pos;
 } RandState;
 
 /* Defined in bzlib_rust/src/rand_rable.rs */

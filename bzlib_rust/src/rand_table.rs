@@ -1,4 +1,4 @@
-const RAND_TABLE: [i32; 512] = [
+const RAND_TABLE: [u16; 512] = [
    619, 720, 127, 481, 931, 816, 813, 233, 566, 247, 
    985, 724, 205, 454, 863, 491, 741, 242, 949, 214, 
    733, 859, 335, 708, 621, 574, 73, 654, 730, 472, 
@@ -56,8 +56,8 @@ const RAND_TABLE: [i32; 512] = [
 // Keep this in sync with bzlib_private.h:
 #[repr(C)]
 pub struct RandState {
-    n_to_go: i32,
-    table_pos: i32,
+    n_to_go: u16,
+    table_pos: u16,
 }
 
 #[no_mangle]
@@ -80,11 +80,9 @@ pub unsafe extern "C" fn BZ2_rand_mask(r: &RandState) -> i32 {
 #[no_mangle]
 pub unsafe extern "C" fn BZ2_rand_update_mask(r: &mut RandState) {
     if r.n_to_go == 0 {
-        r.n_to_go = RAND_TABLE[r.table_pos as usize];
-        r.table_pos += 1;
-        if r.table_pos == 512 {
-            r.table_pos = 0;
-        }
+        r.n_to_go = RAND_TABLE[usize::from(r.table_pos)];
+        r.table_pos = r.table_pos.saturating_add(1) % 512;
     }
-    r.n_to_go -= 1;
+
+    r.n_to_go = r.n_to_go.saturating_sub(1);
 }
