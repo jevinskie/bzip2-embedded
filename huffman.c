@@ -30,15 +30,16 @@
    (WEIGHTOF(zw1)+WEIGHTOF(zw2)) |                    \
    (1 + MYMAX(DEPTHOF(zw1),DEPTHOF(zw2)))
 
-#define UPHEAP(z)                                     \
-{                                                     \
-   Int32 zz, tmp;                                     \
-   zz = z; tmp = heap[zz];                            \
-   while (weight[tmp] < weight[heap[zz >> 1]]) {      \
-      heap[zz] = heap[zz >> 1];                       \
-      zz >>= 1;                                       \
-   }                                                  \
-   heap[zz] = tmp;                                    \
+static void
+upheap(Int32 *heap, Int32 *weight, Int32 z)
+{
+   Int32 zz, tmp;
+   zz = z; tmp = heap[zz];
+   while (weight[tmp] < weight[heap[zz >> 1]]) {
+      heap[zz] = heap[zz >> 1];
+      zz >>= 1;
+   }
+   heap[zz] = tmp;
 }
 
 #define DOWNHEAP(z)                                   \
@@ -92,7 +93,7 @@ void BZ2_hbMakeCodeLengths ( UChar *len,
          parent[i] = -1;
          nHeap++;
          heap[nHeap] = i;
-         UPHEAP(nHeap);
+         upheap(heap, weight, nHeap);
       }
 
       AssertH( nHeap < (BZ_MAX_ALPHA_SIZE+2), 2001 );
@@ -106,7 +107,7 @@ void BZ2_hbMakeCodeLengths ( UChar *len,
          parent[nNodes] = -1;
          nHeap++;
          heap[nHeap] = nNodes;
-         UPHEAP(nHeap);
+         upheap(heap, weight, nHeap);
       }
 
       AssertH( nNodes < (BZ_MAX_ALPHA_SIZE * 2), 2002 );
