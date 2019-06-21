@@ -1,7 +1,14 @@
 image: "rust:latest"
 
+lint:fmt:
+  before_script:
+    - rustup component add rustfmt
+  script:
+    - cargo fmt -- --check
+  allow_failure: true
+
 test:cargo:
   script:
-  - ./autogen.sh
-  - ./configure
-  - make check-local
+    - ./autogen.sh
+    - ./configure
+    - make check-local
