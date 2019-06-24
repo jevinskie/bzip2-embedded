@@ -2,6 +2,7 @@
 // Ethernet & FDDI 32-bit CRC standard.  Vaguely derived
 // from code by Rob Warnock, in Section 51 of the
 // comp.compression FAQ.
+#[rustfmt::skip]
 const TABLE: [u32; 256] = [
    0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
    0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
@@ -94,7 +95,8 @@ mod tests {
     // original crc32 implementation in bzlib, but using a Rust crate
     // for it.
     pub fn crc32_buffer(buf: &[u8]) -> u32 {
-        let mut digest = crc32::Digest::new_custom(crc32::IEEE, !0u32, !0u32, crc::CalcType::Normal);
+        let mut digest =
+            crc32::Digest::new_custom(crc32::IEEE, !0u32, !0u32, crc::CalcType::Normal);
         digest.write(buf);
         digest.sum32()
     }
@@ -102,9 +104,10 @@ mod tests {
     pub fn bz_crc32_buffer(buf: &[u8]) -> u32 {
         let mut state: u32 = 0;
 
-        unsafe { 
+        unsafe {
             BZ2_initialise_crc(&mut state);
-            buf.iter().for_each(|byte| BZ2_update_crc(&mut state, *byte));
+            buf.iter()
+                .for_each(|byte| BZ2_update_crc(&mut state, *byte));
             BZ2_finalise_crc(&mut state);
         }
 
@@ -117,14 +120,15 @@ mod tests {
         let buf2 = " ";
         let buf3 = "hello world";
 
-        let buf4 =
-            concat!("Lorem ipsum dolor sit amet, consectetur adipiscing elit, ",
-                    "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-                    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ",
-                    "ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit ",
-                    "in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur ",
-                    "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ",
-                    "mollit anim id est laborum.");
+        let buf4 = concat!(
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, ",
+            "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+            "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ",
+            "ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit ",
+            "in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur ",
+            "sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt ",
+            "mollit anim id est laborum."
+        );
 
         // These are values obtained from the original C implementation
         // of BZ2_initialise_crc() / BZ2_update_crc() / BZ2_finalise_crc().
@@ -133,9 +137,21 @@ mod tests {
         assert_eq!(crc32_buffer(buf3.as_bytes()), 0x44f71378);
         assert_eq!(crc32_buffer(buf4.as_bytes()), 0xd31de6c9);
 
-        assert_eq!(crc32_buffer(buf1.as_bytes()), bz_crc32_buffer(buf1.as_bytes()));
-        assert_eq!(crc32_buffer(buf2.as_bytes()), bz_crc32_buffer(buf2.as_bytes()));
-        assert_eq!(crc32_buffer(buf3.as_bytes()), bz_crc32_buffer(buf3.as_bytes()));
-        assert_eq!(crc32_buffer(buf4.as_bytes()), bz_crc32_buffer(buf4.as_bytes()));
+        assert_eq!(
+            crc32_buffer(buf1.as_bytes()),
+            bz_crc32_buffer(buf1.as_bytes())
+        );
+        assert_eq!(
+            crc32_buffer(buf2.as_bytes()),
+            bz_crc32_buffer(buf2.as_bytes())
+        );
+        assert_eq!(
+            crc32_buffer(buf3.as_bytes()),
+            bz_crc32_buffer(buf3.as_bytes())
+        );
+        assert_eq!(
+            crc32_buffer(buf4.as_bytes()),
+            bz_crc32_buffer(buf4.as_bytes())
+        );
     }
 }
