@@ -2,6 +2,7 @@
 // Ethernet & FDDI 32-bit CRC standard.  Vaguely derived
 // from code by Rob Warnock, in Section 51 of the
 // comp.compression FAQ.
+#[rustfmt::skip]
 const TABLE: [u32; 256] = [
    0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9,
    0x130476dc, 0x17c56b6b, 0x1a864db2, 0x1e475005,
