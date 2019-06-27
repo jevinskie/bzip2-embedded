@@ -8,6 +8,9 @@ lint:fmt:
   allow_failure: true
 
 test:cargo:
+  before_script:
+    - apt update -y
+    - apt install -y autoconf-archive
   script:
     - ./autogen.sh
     - ./configure
