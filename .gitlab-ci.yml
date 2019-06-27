@@ -1,7 +1,10 @@
 image: "rust:latest"
 
 test:cargo:
+  before_script:
+    - apt update -y
+    - apt install -y autoconf-archive
   script:
-  - ./autogen.sh
-  - ./configure
-  - make check-local
+    - ./autogen.sh
+    - ./configure
+    - make check-local
