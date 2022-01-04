@@ -1066,12 +1066,14 @@ void BZ2_blockSort ( EState* s )
       budget = budgetInit;
 
       mainSort ( ptr, block, quadrant, ftab, nblock, verb, &budget );
+#ifndef BZ2_DISABLE_FP
       if (verb >= 3)
          VPrintf3 ( "      %d work, %d block, ratio %5.2f\n",
                     budgetInit - budget,
                     nblock,
                     (float)(budgetInit - budget) /
                     (float)(nblock==0 ? 1 : nblock) );
+#endif
       if (budget < 0) {
          if (verb >= 2)
             VPrintf0 ( "    too repetitive; using fallback"
