@@ -7,6 +7,9 @@ option(ENABLE_DEBUG      "Turn on debug output")
 option(ENABLE_APP        "Build applications (bzip2, and bzip2recover)"
     ${ENABLE_APP_DEFAULT})
 
+option(ENABLE_TESTS      "Build/enable unit tests."
+    ${ENABLE_TESTS_DEFAULT})
+
 option(ENABLE_DOCS       "Generate documentation"
     ${ENABLE_DOCS_DEFAULT})
 

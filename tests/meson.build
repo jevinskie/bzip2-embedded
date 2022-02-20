@@ -1,23 +1,46 @@
 prog_python = import('python').find_installation('python3')
 
-# Tuple in the form (args, input, expected)
-foreach t : [['-1', 'sample1.ref', 'sample1.bz2'],
-             ['-2', 'sample2.ref', 'sample2.bz2'],
-             ['-3', 'sample3.ref', 'sample3.bz2']]
-  test(
-    t[1] + ' (compress)',
-    prog_python,
-    args : [files('runtest.py'), '--mode', 'compress', bzip2, t[0], files(t[1]), files(t[2])],
-  )
-endforeach
+r = run_command(prog_python, '-m', 'pytest', '--help', check: false)
+errortxt = r.stderr().strip()
+if errortxt.contains('No module named pytest')
+  error('pytest for python3 is required to run the tests. Please `pip3 install pytest` and try again.')
+endif
 
-# Tuple in the form (args, input)
-foreach t : [['-1', 'sample1.ref'],
-             ['-2', 'sample2.ref'],
-             ['-3', 'sample3.ref']]
+valgrind = find_program('valgrind')
+
+fs = import('fs')
+env = environment()
+
+environment = [
+  'PYTHONTRACEMALLOC=1',
+  'VERSION=' + meson.project_version(),
+  'LD_LIBRARY_PATH=' + fs.parent(libbzip2.full_path()),
+  'DYLD_LIBRARY_PATH=' + fs.parent(libbzip2.full_path()),
+  'PATH_SOURCE=' + meson.project_source_root(),
+  'PATH_BUILD=' + meson.project_build_root(),
+  'PATH_TMP=' + meson.current_build_dir(),
+  'PATH_LIBBZ2=' + libbzip2.full_path(),
+  'PATH_BZIP2=' + bzip2.full_path(),
+]
+
+if valgrind.found() == true
+  environment += 'VALGRIND=' + valgrind.full_path()
+endif
+
+test(
+  'quick_test.py',
+  prog_python,
+  args : ['-m', 'pytest', '-vv', meson.current_source_dir() + '/quick_test.py'],
+  env : environment,
+  timeout : 500
+)
+
+if (fs.exists(meson.current_source_dir() + '/input/bzip2-testfiles/README.md'))
   test(
-    t[1] + ' (decompress)',
+    'large_test.py',
     prog_python,
-    args : [files('runtest.py'), '--mode', 'decompress', bzip2, t[0], files(t[1])],
+    args : ['-m', 'pytest', '-vv', meson.current_source_dir() + '/large_test.py'],
+    env : environment,
+    timeout : 10000
   )
-endforeach
+endif

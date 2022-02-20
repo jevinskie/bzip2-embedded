@@ -30,6 +30,7 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 HexVersion(PACKAGE_VERSION_NUM ${PROJECT_VERSION_MAJOR} ${PROJECT_VERSION_MINOR} ${PROJECT_VERSION_PATCH})
 
 set(ENABLE_APP_DEFAULT ON)
+set(ENABLE_TESTS_DEFAULT ON)
 set(ENABLE_EXAMPLES_DEFAULT OFF)
 set(ENABLE_DOCS_DEFAULT OFF)
 include(CMakeOptions.txt)
@@ -68,8 +69,69 @@ endif()
 
 include(GNUInstallDirs)
 
-# For test scripts and documentation
-find_package(Python3)
+if(ENABLE_TESTS OR ENABLE_DOCS)
+    # For test scripts and documentation
+    find_package(Python3 REQUIRED)
+endif()
+
+#
+# Find other Test dependencies
+# - pytest (optional)
+# - unittest (if pytest not present)
+# - valgrind (optional, Linux only)
+#
+if(ENABLE_TESTS)
+    # Try finding pytest from the PATH
+    execute_process(
+        COMMAND pytest --version
+        RESULT_VARIABLE PYTEST_EXIT_CODE
+        ERROR_QUIET OUTPUT_QUIET
+    )
+
+    if(${PYTEST_EXIT_CODE} EQUAL 0)
+        # pytest found in the path.
+        set(PythonTest_COMMAND "pytest;-v")
+    else()
+        # Not in the path, try using: python3 -m pytest
+        execute_process(
+            COMMAND ${Python3_EXECUTABLE} -m pytest --version
+            RESULT_VARIABLE PYTEST_MODULE_EXIT_CODE
+            ERROR_QUIET OUTPUT_QUIET
+        )
+
+        if(${PYTEST_MODULE_EXIT_CODE} EQUAL 0)
+            # pytest isn't in the path, but the Python 3 we found has it.
+            set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;pytest;-v")
+        else()
+            # pytest couldn't be found, verify that we can at least use: python3 -m unittest
+            execute_process(
+                COMMAND ${Python3_EXECUTABLE} -m unittest --help
+                RESULT_VARIABLE UNITTEST_MODULE_EXIT_CODE
+                ERROR_QUIET OUTPUT_QUIET
+            )
+
+            if(${UNITTEST_MODULE_EXIT_CODE} EQUAL 0)
+                # No pytest :-(, but we'll get by with unittest
+                message("Python 3 package 'pytest' is not installed for ${Python3_EXECUTABLE} and is not available in your PATH.")
+                message("Failed unit tests will be easier to read if you install pytest.")
+                message("Eg:  python3 -m pip install --user pytest")
+
+                set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;unittest;--verbose")
+            else()
+                # No unittest either!
+                # Some weird Python installations do exist that lack standard modules like unittest.
+                # Let's make sure these folks know the Python 3 install we found won't cut it.
+                message("Python 3 found: ${Python3_EXECUTABLE}, but it is missing the unittest module (wierd!).")
+                message(FATAL_ERROR "The tests won't work with this Python installation. You can disable the tests by reconfiguring with: -D ENABLE_TESTS=OFF")
+            endif()
+        endif()
+    endif()
+
+    # Check for valgrind. If it exists, we'll enable extra tests that use valgrind.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        find_package(Valgrind)
+    endif()
+endif()
 
 # Checks for header files.
 include(CheckIncludeFile)
@@ -348,7 +410,7 @@ if(ENABLE_APP)
 
 endif()
 
-if(Python3_FOUND)
+if(ENABLE_APP AND Python3_FOUND)
     enable_testing()
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
     add_subdirectory(tests)

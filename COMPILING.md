@@ -42,44 +42,45 @@ to control compilation. A few important ones are listed below:
 - -Dbuildtype=[debug|debugoptmized|release|minsize|plain] : Controls default optimization/debug generation args,
   defaults to `debug`, use `plain` if you wish to pass your own cflags.
 
-Meson recognizes environment variables like $CFLAGS and $CC, it is recommended
-that you do not use $CFLAGS, and instead use -Dc_args and -DC_link_args, as
-Meson will remember these even if you need to reconfigure from scratch (such
-as when you update Meson), it will not remember $CFLAGS.
+Meson recognizes environment variables like `$CFLAGS` and `$CC`.
+It is recommended that you do not use `$CFLAGS`, and instead use `-Dc_args` and
+`-DC_link_args`, as Meson will remember these even if you need to reconfigure
+from scratch (such as when you update Meson), it will not remember `$CFLAGS`.
 
-Meson will never change compilers once configured, so $CC is perfectly safe.
+Meson will never change compilers once configured, so `$CC` is perfectly safe.
 
 ### Unix-like (Linux, *BSD, Cygwin, macOS)
 
-You will need
- - Python 3.5 or newer (for Meson)
- - meson (Version 0.48 or newer)
+You will need:
+ - Python 3.6 or newer (for 3.5 for Meson and 3.6 for the tests)
+ - Python's 'pytest' module, for running the tests.
+ - meson (Version 0.56 or newer)
  - ninja
  - pkg-config
  - A C compiler such as GCC or Clang
 
- Some linux distros package managers refer to ninja as ninja-build, fedora
- and debian/ubuntu both do this. Your OS probably provides meson, although
- it may be too old, in that case you can use python3's pip to install meson:
+Some linux distros package managers refer to ninja as ninja-build, fedora
+and debian/ubuntu both do this. Your OS probably provides Meson, although
+it may be too old, in that case you can use python3's pip to install Meson:
 
- ```sh
- sudo pip3 install meson
- ```
- or, for a user local install:
- ```sh
- pip3 install --user meson
- ```
+```sh
+sudo pip3 install meson
+```
+or, for a user local install:
+```sh
+pip3 install --user meson
+```
 
- Once you have installed the dependencies, the following should work
- to use the standard Meson configuration, a `builddir` for
- compilation, and a `/usr` prefix for installation:
+Once you have installed the dependencies, the following should work
+to use the standard Meson configuration, a `builddir` for
+compilation, and a `/usr` prefix for installation:
 
- ```sh
- meson --prefix /usr builddir/
- ninja -C builddir
- meson test -C builddir --print-errorlogs
- [sudo] ninja -C builddir install
- ```
+```sh
+meson --prefix /usr builddir/
+ninja -C builddir
+meson test -C builddir --print-errorlogs
+[sudo] ninja -C builddir install
+```
 
 You can use `meson configure builddir` to check configuration options.
 Currently bzip only has one project specific option, which is to force the
@@ -91,27 +92,32 @@ number of threads.
 
 ### Windows
 
-You will need to either download python 3.5 or newer and install with pip:
+You will need:
+- Python 3.6 or newer
+- Meson
+- Visual Studio 2015+ (Community edition is fine)
+
+You can install Meson with Python's pip package manager:
 ```cmd
-py -m pip install meson
+python -m pip install meson
 ```
 or you can [download pre-bundled installers of meson directly from meson's github](https://github.com/mesonbuild/meson/releases).
 
-Either should work fine for the purposes of building bzip2
+Either should work fine for the purposes of building Bzip2.
 
 You will also need pkg-config. There are many sources of pkg-config, I
-recommend installing from chocolatey because it's easy. chocolatey can also
-provide ninja, though ninja is not required on windows if you want to use
+recommend installing from Chocolatey because it's easy. Chocolatey can also
+provide Ninja, though Ninja is not required on Windows if you want to use
 msbuild.
 
 If you want to use MSVC or a compatible compiler launch the associated
-environment cmd to run meson from; the environments required to make those
+environment cmd to run Meson from; the environments required to make those
 compilers work is quite complex otherwise.
 
-Once you have all of that installed you can invoke meson to configure the
-build. By default meson will generate a ninja backend, if you would prefer to
-use msbuild pass the backend flag `--backend=vs`. MSVC (and compatible
-compilers like clang-cl and ICL) work with ninja as well.
+Once you have all of that installed you can invoke Meson to configure the
+build. By default Meson will generate a Ninja backend. If you would prefer to
+use msbuild, pass the backend flag `--backend=vs`. MSVC (and compatible
+compilers like clang-cl and ICL) work with Ninja as well.
 
 ```cmd
 meson $builddir
@@ -128,6 +134,18 @@ msbuild bzip2.sln /m
 
 ## Using CMake
 
+### Requirements
+
+For Linux/Unix:
+ - Python 3.6 or newer (for 3.5 for Meson and 3.6 for the tests)
+ - CMake (Version 3.12 or newer)
+ - A C compiler such as GCC or Clang
+
+For Windows:
+- Python 3.6 or newer
+- CMake
+- Visual Studio 2015+ (Community edition is fine)
+
 ### Build instructions for Unix & Windows (CMake)
 
 Bzip2 can be compiled with the [CMake] build system.
@@ -135,46 +153,123 @@ You can use these commands to build Bzip2 in a certain `build` directory.
 
 #### Basic Release build
 
+Linux/Unix:
 ```sh
 mkdir build && cd build
-cmake ..
-cmake --build . --config Release
+cmake .. -DCMAKE_BUILD_TYPE="Release"
+cmake --build .
+ctest -V
 ```
 
-#### Basic Debug build
-
-```sh
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE="Debug"
-cmake --build . --config Debug
-```
-
-#### Build and install to a specific install location (prefix)
-
-```sh
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=`pwd`/install ..
-cmake --build . --target install --config Release
-```
-
-#### Build with example application (dlltest)
-
-```sh
-mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX:PATH=`pwd`/install .. -DENABLE_EXAMPLES=ON
-cmake --build . --target install --config Release
-```
-
-#### Build and run tests
-
-- `-V`: Verbose
-- `-C`: Required for Windows builds
-
-```sh
+Windows:
+```ps1
 mkdir build && cd build
 cmake ..
 cmake --build . --config Release
 ctest -C Release -V
+```
+
+#### Basic Debug build
+
+Linux/Unix:
+```sh
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE="Debug"
+cmake --build .
+ctest -V
+```
+
+Windows:
+```ps1
+mkdir build && cd build
+cmake ..
+cmake --build . --config Debug
+ctest -C Release -V
+```
+
+#### Build and install to a specific install location (prefix)
+
+Linux/Unix:
+```sh
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=install
+cmake --build .
+ctest -V
+cmake --build . --target install
+```
+
+Windows:
+```ps1
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=install
+cmake --build . --config Release
+ctest -C Release -V
+cmake --build . --config Release --target install
+```
+
+#### Other CMake Options
+
+`ENABLE_EXAMPLES`: Default: `OFF`
+Enabling this option will also build the "dlltest" example executable. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_EXAMPLES=ON
+cmake --build .
+```
+
+`ENABLE_DOCS`: Default: `OFF`
+Enabling this option will generate extra documentation. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_DOCS=ON
+cmake --build .
+```
+
+`ENABLE_APP`: Default: `ON`
+Disabling this option will prevent building `bzip` or any of the other programs
+that come with `bzip2`. It will also disable the tests. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_APP=OFF
+cmake --build .
+```
+
+`ENABLE_LIB_ONLY`: Default: `OFF`
+Enabling this option is similar to disabling `ENABLE_APP`. Only libbz2 will be
+compiled. It will also disable the tests. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_LIB_ONLY=ON
+cmake --build .
+```
+
+`ENABLE_STATIC_LIB`: Default: `OFF`
+Enabling this option will build a static version of libbz2.
+If `ENABLE_SHARED_LIB` is also enabled, the apps will link with the shared one.
+E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_STATIC_LIB=ON
+cmake --build .
+```
+
+`ENABLE_SHARED_LIB`: Default: `ON`
+Disabling this option will not build a shared version of libbz2. You must enable
+`ENABLE_STATIC_LIB` if you disable `ENABLE_SHARED_LIB`. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_SHARED_LIB=OFF -DENABLE_STATIC_LIB=ON
+cmake --build .
+```
+
+`USE_OLD_SONAME`: Default: `OFF`
+Enabling this option will build an extra copy of the shared library that uses
+the old SONAME. This option is made available for some linux distributions that
+still distribute libbz2 with the old SONAME. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DUSE_OLD_SONAME=ON
+cmake --build .
 ```
 
 ## Using nmake on Windows
