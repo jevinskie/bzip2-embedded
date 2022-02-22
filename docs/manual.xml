@@ -2546,57 +2546,6 @@ recovered from.</para>
 
 </sect1>
 
-
-<sect1 id="win-dll" xreflabel="Making a Windows DLL">
-<title>Making a Windows DLL</title>
-
-<para>Everything related to Windows has been contributed by
-Yoshioka Tsuneo
-(<computeroutput>tsuneo@rr.iij4u.or.jp</computeroutput>), so
-you should send your queries to him (but perhaps Cc: me,
-<computeroutput>&bz-email;</computeroutput>).</para>
-
-<para>My vague understanding of what to do is: using Visual C++
-5.0, open the project file
-<computeroutput>libbz2.dsp</computeroutput>, and build.  That's
-all.</para>
-
-<para>If you can't open the project file for some reason, make a
-new one, naming these files:
-<computeroutput>blocksort.c</computeroutput>,
-<computeroutput>bzlib.c</computeroutput>,
-<computeroutput>compress.c</computeroutput>,
-<computeroutput>crctable.c</computeroutput>,
-<computeroutput>decompress.c</computeroutput>,
-<computeroutput>huffman.c</computeroutput>,
-<computeroutput>randtable.c</computeroutput> and
-<computeroutput>libbz2.def</computeroutput>.  You will also need
-to name the header files <computeroutput>bzlib.h</computeroutput>
-and <computeroutput>bzlib_private.h</computeroutput>.</para>
-
-<para>If you don't use VC++, you may need to define the
-proprocessor symbol
-<computeroutput>_WIN32</computeroutput>.</para>
-
-<para>Finally, <computeroutput>dlltest.c</computeroutput> is a
-sample program using the DLL.  It has a project file,
-<computeroutput>dlltest.dsp</computeroutput>.</para>
-
-<para>If you just want a makefile for Visual C, have a look at
-<computeroutput>makefile.msc</computeroutput>.</para>
-
-<para>Be aware that if you compile
-<computeroutput>bzip2</computeroutput> itself on Win32, you must
-set <computeroutput>BZ_UNIX</computeroutput> to 0 and
-<computeroutput>BZ_LCCWIN32</computeroutput> to 1, in the file
-<computeroutput>bzip2.c</computeroutput>, before compiling.
-Otherwise the resulting binary won't work correctly.</para>
-
-<para>I haven't tried any of this stuff myself, but it all looks
-plausible.</para>
-
-</sect1>
-
 </chapter>
 
 

@@ -17,8 +17,8 @@ found at https://sourceware.org/git/?p=bzip2.git
 
 Build system changes:
 
-* Instead of the historical Makefile, bzip2 now comes with two supported build
-  systems (Meson and CMake), and an unsupported one (makefile.msc).
+* Instead of the historical Makefile, Bzip2 now comes with two supported build
+  systems (Meson and CMake).
   Either of the supported ones should build a shared library as per modern
   practices. Please see the file [COMPILING.md](COMPILING.md) for details.
 
@@ -87,7 +87,7 @@ Other changes, fixes:
 
 * Accept as many selectors as the file format allows.
   This relaxes the fix for CVE-2019-12900 from 1.0.7
-  so that bzip2 allows decompression of `.bz2` files that
+  so that Bzip2 allows decompression of `.bz2` files that
   use (too) many selectors again.
 
 * Fix handling of large (> 4GB) files on Windows. (Phil Ross)
