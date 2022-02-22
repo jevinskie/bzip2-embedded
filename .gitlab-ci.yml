@@ -3,12 +3,12 @@
 variables:
   AMD64_DEBIAN_TESTING: debian:testing
   AMD64_UBUNTU_BIONIC: ubuntu:bionic
-  AMD64_FEDORA_LATEST: 'registry.fedoraproject.org/fedora:30'
-  AMD64_FEDORA_RAWHIDE: 'registry.fedoraproject.org/fedora:rawhide'
+  AMD64_FEDORA_LATEST: "registry.fedoraproject.org/fedora:30"
+  AMD64_FEDORA_RAWHIDE: "registry.fedoraproject.org/fedora:rawhide"
   AMD64_OPENSUSE_LEAP: opensuse/leap
   AMD64_OPENSUSE_TUMBLEWEED: opensuse/tumbleweed
 
-  I386_UBUNTU_BIONIC: 'i386/ubuntu:bionic'
+  I386_UBUNTU_BIONIC: "i386/ubuntu:bionic"
 
 stages:
   - test
@@ -24,74 +24,76 @@ stages:
     - rm -rf builddir
   artifacts:
     paths:
-      - 'meson-log.txt'
+      - "meson-log.txt"
 
 .cmake_test:
   stage: test
   script:
     - mkdir builddir && cd builddir
-    - cmake ..
-    - cmake --build . --config Release
+    - cmake .. -DCMAKE_BUILD_TYPE="Release"
+    - cmake --build .
     - make check
   after_script:
     - cp builddir/CMakeFiles/CMakeOutput.log .
     - rm -rf builddir
   artifacts:
     paths:
-      - 'CMakeOutput.log'
+      - "CMakeOutput.log"
 
 debian:testing:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc meson python3-distutils
+    - apt-get install -y gcc meson python3-distutils python3-pip
+    - pip3 install pytest
 
 debian:testing:cmake:
-  extends: '.cmake_test'
+  extends: ".cmake_test"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
     - apt-get install -y gcc make python3-pip cmake
+    - pip3 install pytest
 
 ubuntu:bionic:meson:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_UBUNTU_BIONIC
   before_script:
     - apt-get update -y
     - apt-get install -y gcc python3-pip ninja-build
-    - pip3 install meson
+    - pip3 install meson pytest
 
 ubuntu:bionic:i386:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $I386_UBUNTU_BIONIC
   before_script:
     - apt-get update -y
     - apt-get install -y gcc python3-pip ninja-build
-    - pip3 install meson
+    - pip3 install meson pytest
 
 fedora:30:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_FEDORA_LATEST
   before_script:
-    - dnf install -y gcc meson
+    - dnf install -y gcc meson python3-pytest
 
 fedora:rawhide:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_FEDORA_RAWHIDE
   before_script:
-    - dnf install -y gcc meson
+    - dnf install -y gcc meson python3-pytest
   allow_failure: true
 
 opensuse/leap:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_OPENSUSE_LEAP
   before_script:
     - zypper install -y gcc ninja python3-pip
-    - pip3 install meson
+    - pip3 install meson pytest
 
 opensuse/tumbleweed:
-  extends: '.meson_test'
+  extends: ".meson_test"
   image: $AMD64_OPENSUSE_TUMBLEWEED
   before_script:
-    - zypper install -y gcc meson
+    - zypper install -y gcc meson python3-pytest
