@@ -6,7 +6,7 @@ if errortxt.contains('No module named pytest')
   error('pytest for python3 is required to run the tests. Please `pip3 install pytest` and try again.')
 endif
 
-valgrind = find_program('valgrind')
+valgrind = find_program('valgrind', required : false)
 
 fs = import('fs')
 env = environment()

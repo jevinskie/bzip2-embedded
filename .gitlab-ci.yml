@@ -45,7 +45,7 @@ debian:testing:
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc meson python3-distutils python3-pip
+    - apt-get install -y gcc meson python3-distutils python3-pip valgrind
     - pip3 install pytest
 
 debian:testing:cmake:
@@ -53,7 +53,7 @@ debian:testing:cmake:
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc make python3-pip cmake
+    - apt-get install -y gcc make python3-pip cmake valgrind
     - pip3 install pytest
 
 ubuntu:bionic:meson:
@@ -61,7 +61,7 @@ ubuntu:bionic:meson:
   image: $AMD64_UBUNTU_BIONIC
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc python3-pip ninja-build
+    - apt-get install -y gcc python3-pip ninja-build valgrind
     - pip3 install meson pytest
 
 ubuntu:bionic:i386:
@@ -69,31 +69,31 @@ ubuntu:bionic:i386:
   image: $I386_UBUNTU_BIONIC
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc python3-pip ninja-build
+    - apt-get install -y gcc python3-pip ninja-build valgrind
     - pip3 install meson pytest
 
 fedora:30:
   extends: ".meson_test"
   image: $AMD64_FEDORA_LATEST
   before_script:
-    - dnf install -y gcc meson python3-pytest
+    - dnf install -y gcc meson python3-pytest valgrind
 
 fedora:rawhide:
   extends: ".meson_test"
   image: $AMD64_FEDORA_RAWHIDE
   before_script:
-    - dnf install -y gcc meson python3-pytest
+    - dnf install -y gcc meson python3-pytest valgrind
   allow_failure: true
 
 opensuse/leap:
   extends: ".meson_test"
   image: $AMD64_OPENSUSE_LEAP
   before_script:
-    - zypper install -y gcc ninja python3-pip
+    - zypper install -y gcc ninja python3-pip valgrind
     - pip3 install meson pytest
 
 opensuse/tumbleweed:
   extends: ".meson_test"
   image: $AMD64_OPENSUSE_TUMBLEWEED
   before_script:
-    - zypper install -y gcc meson python3-pytest
+    - zypper install -y gcc meson python3-pytest valgrind
