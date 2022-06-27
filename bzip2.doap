@@ -20,8 +20,8 @@
 
   <maintainer>
     <foaf:Person>
-      <foaf:name>Federico Mena Quintero</foaf:name>
-      <foaf:mbox rdf:resource="mailto:federico@gnome.org" />
+      <foaf:name>Micah Snyder</foaf:name>
+      <foaf:mbox rdf:resource="mailto:micah.d.snyder@gmail.com" />
     </foaf:Person>
   </maintainer>
 
