@@ -13,7 +13,7 @@ if(WIN32)
         file(TO_NATIVE_PATH $<TARGET_FILE:bz2>        LIBBZ2)
     endif()
 
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/bzip2.exe BZIP2)
+    file(TO_NATIVE_PATH $<TARGET_FILE:bzip2> BZIP2)
 
 else() # Not WIN32
     set(LD_LIBRARY_PATH $<TARGET_FILE_DIR:bz2>:$ENV{LD_LIBRARY_PATH})
