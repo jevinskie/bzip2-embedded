@@ -10,6 +10,8 @@ variables:
 
   I386_UBUNTU_BIONIC: "i386/ubuntu:bionic"
 
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
   - test
 
@@ -40,7 +42,7 @@ stages:
     paths:
       - "CMakeOutput.log"
 
-debian:testing:
+debian:testing:meson:
   extends: ".meson_test"
   image: $AMD64_DEBIAN_TESTING
   before_script:
@@ -64,7 +66,15 @@ ubuntu:bionic:meson:
     - apt-get install -y gcc python3-pip ninja-build valgrind
     - pip3 install meson pytest
 
-ubuntu:bionic:i386:
+ubuntu:bionic:cmake:
+  extends: ".cmake_test"
+  image: $AMD64_UBUNTU_BIONIC
+  before_script:
+    - apt-get update -y
+    - apt-get install -y gcc make python3-pip valgrind
+    - pip3 install pytest cmake
+
+ubuntu:bionic:i386:meson:
   extends: ".meson_test"
   image: $I386_UBUNTU_BIONIC
   before_script:
@@ -72,28 +82,60 @@ ubuntu:bionic:i386:
     - apt-get install -y gcc python3-pip ninja-build valgrind
     - pip3 install meson pytest
 
-fedora:30:
+ubuntu:bionic:i386:cmake:
+  extends: ".cmake_test"
+  image: $I386_UBUNTU_BIONIC
+  before_script:
+    - apt-get update -y
+    - apt-get install -y gcc make python3-pip valgrind
+    - pip3 install pytest cmake
+
+fedora:30:meson:
   extends: ".meson_test"
   image: $AMD64_FEDORA_LATEST
   before_script:
     - dnf install -y gcc meson python3-pytest valgrind
 
-fedora:rawhide:
+fedora:30:cmake:
+  extends: ".cmake_test"
+  image: $AMD64_FEDORA_LATEST
+  before_script:
+    - dnf install -y gcc cmake python3-pytest valgrind
+
+fedora:rawhide:meson:
   extends: ".meson_test"
   image: $AMD64_FEDORA_RAWHIDE
   before_script:
     - dnf install -y gcc meson python3-pytest valgrind
-  allow_failure: true
 
-opensuse/leap:
+fedora:rawhide:cmake:
+  extends: ".cmake_test"
+  image: $AMD64_FEDORA_RAWHIDE
+  before_script:
+    - dnf install -y gcc cmake python3-pytest valgrind
+
+opensuse/leap:meson:
   extends: ".meson_test"
   image: $AMD64_OPENSUSE_LEAP
   before_script:
     - zypper install -y gcc ninja python3-pip valgrind
     - pip3 install meson pytest
 
-opensuse/tumbleweed:
+opensuse/leap:cmake:
+  extends: ".cmake_test"
+  image: $AMD64_OPENSUSE_LEAP
+  before_script:
+    - zypper install -y gcc cmake python3-pip valgrind
+    - pip3 install pytest
+
+opensuse/tumbleweed:meson:
   extends: ".meson_test"
   image: $AMD64_OPENSUSE_TUMBLEWEED
   before_script:
     - zypper install -y gcc meson python3-pytest valgrind
+
+opensuse/tumbleweed:cmake:
+  extends: ".cmake_test"
+  image: $AMD64_OPENSUSE_TUMBLEWEED
+  before_script:
+    - zypper install -y gcc cmake python3-pytest valgrind
