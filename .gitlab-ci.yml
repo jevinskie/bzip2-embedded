@@ -28,11 +28,53 @@ stages:
     paths:
       - "meson-log.txt"
 
+.cmake_test_debug:
+  stage: test
+  script:
+    - mkdir builddir && cd builddir
+    - cmake .. -DCMAKE_BUILD_TYPE="Debug" -D ENABLE_SHARED_LIB=ON -D ENABLE_STATIC_LIB=OFF
+    - cmake --build .
+    - make check
+  after_script:
+    - cp builddir/CMakeFiles/CMakeOutput.log .
+    - rm -rf builddir
+  artifacts:
+    paths:
+      - "CMakeOutput.log"
+
 .cmake_test:
   stage: test
   script:
     - mkdir builddir && cd builddir
-    - cmake .. -DCMAKE_BUILD_TYPE="Release"
+    - cmake .. -DCMAKE_BUILD_TYPE="Release" -D ENABLE_SHARED_LIB=ON -D ENABLE_STATIC_LIB=OFF
+    - cmake --build .
+    - make check
+  after_script:
+    - cp builddir/CMakeFiles/CMakeOutput.log .
+    - rm -rf builddir
+  artifacts:
+    paths:
+      - "CMakeOutput.log"
+
+.cmake_test_shared_static:
+  stage: test
+  script:
+    - mkdir builddir && cd builddir
+    - cmake .. -DCMAKE_BUILD_TYPE="Release" -D ENABLE_SHARED_LIB=ON -D ENABLE_STATIC_LIB=ON
+    - cmake --build .
+    - make check
+  after_script:
+    - cp builddir/CMakeFiles/CMakeOutput.log .
+    - rm -rf builddir
+  artifacts:
+    paths:
+      - "CMakeOutput.log"
+
+.cmake_test_static_only:
+  stage: test
+  script:
+    - mkdir builddir && cd builddir
+    - cmake .. -DCMAKE_BUILD_TYPE="Release" -D ENABLE_SHARED_LIB=OFF -D ENABLE_STATIC_LIB=ON
     - cmake --build .
     - make check
   after_script:
@@ -50,8 +92,32 @@ debian:testing:meson:
     - apt-get install -y gcc meson python3-distutils python3-pip valgrind
     - pip3 install pytest
 
+debian:testing:cmake:debug:
+  extends: ".cmake_test_debug"
+  image: $AMD64_DEBIAN_TESTING
+  before_script:
+    - apt-get update -y
+    - apt-get install -y gcc make python3-pip cmake valgrind
+    - pip3 install pytest
+
 debian:testing:cmake:
   extends: ".cmake_test"
+  image: $AMD64_DEBIAN_TESTING
+  before_script:
+    - apt-get update -y
+    - apt-get install -y gcc make python3-pip cmake valgrind
+    - pip3 install pytest
+
+debian:testing:cmake:shared_static:
+  extends: ".cmake_test_shared_static"
+  image: $AMD64_DEBIAN_TESTING
+  before_script:
+    - apt-get update -y
+    - apt-get install -y gcc make python3-pip cmake valgrind
+    - pip3 install pytest
+
+debian:testing:cmake:static_only:
+  extends: ".cmake_test_static_only"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y

@@ -56,7 +56,7 @@ running `ctest`.
 
 E.g.:
 ```sh
-git submodule update --recursive
+git submodule update --init --recursive
 ```
 
 For each `.bz2` file found it is decompressed, recompressed and decompressed
