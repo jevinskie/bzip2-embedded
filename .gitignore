@@ -27,3 +27,6 @@ builddir
 *.lib
 *.obj
 *.res
+
+# python unit tests
+__pycache__

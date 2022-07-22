@@ -62,6 +62,11 @@ install:
 - if [%COMPILER%]==[GCC] set "PATH=C:\msys64\mingw%ARCH%\bin;%PATH%"
 
 build_script:
+# Clone the files for the large test suite
+# FIXME: git submodule isn't working with the MinGW environment:
+#   fatal: 'submodule' appears to be a git command, but we were not able to execute it. Maybe git-submodule is broken?
+- if not [%COMPILER%]==[GCC] git submodule update --init --recursive
+
 - mkdir build
 - cd build
 
@@ -69,7 +74,7 @@ build_script:
 - cmake --build . --target install
 
 test_script:
-- cmake --build . --target check
+- ctest -V -C Release
 
 # Enable this to be able to login to the build worker. You can use the
 # `remmina` program in Ubuntu, use the login information that the line below

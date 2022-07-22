@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(bzip2
-        VERSION 1.0.7
+        VERSION 1.1.0
         DESCRIPTION "This Bzip2/libbz2 a program and library for lossless block-sorting data compression."
         LANGUAGES C)
 
@@ -10,7 +10,7 @@ project(bzip2
 #
 # KEEP THESE IN SYNC WITH meson.build OR STUFF WILL BREAK!
 set(LT_CURRENT  1)
-set(LT_REVISION 7)
+set(LT_REVISION 9)
 set(LT_AGE      0)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -30,6 +30,7 @@ set(PACKAGE_VERSION ${PROJECT_VERSION})
 HexVersion(PACKAGE_VERSION_NUM ${PROJECT_VERSION_MAJOR} ${PROJECT_VERSION_MINOR} ${PROJECT_VERSION_PATCH})
 
 set(ENABLE_APP_DEFAULT ON)
+set(ENABLE_TESTS_DEFAULT ON)
 set(ENABLE_EXAMPLES_DEFAULT OFF)
 set(ENABLE_DOCS_DEFAULT OFF)
 include(CMakeOptions.txt)
@@ -68,11 +69,69 @@ endif()
 
 include(GNUInstallDirs)
 
-# For test scripts and documentation
-find_package(Python3)
+if(ENABLE_TESTS OR ENABLE_DOCS)
+    # For test scripts and documentation
+    find_package(Python3 REQUIRED)
+endif()
 
-# Always use '-fPIC'/'-fPIE' option.
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+#
+# Find other Test dependencies
+# - pytest (optional)
+# - unittest (if pytest not present)
+# - valgrind (optional, Linux only)
+#
+if(ENABLE_TESTS)
+    # Try finding pytest from the PATH
+    execute_process(
+        COMMAND pytest --version
+        RESULT_VARIABLE PYTEST_EXIT_CODE
+        ERROR_QUIET OUTPUT_QUIET
+    )
+
+    if(${PYTEST_EXIT_CODE} EQUAL 0)
+        # pytest found in the path.
+        set(PythonTest_COMMAND "pytest;-v")
+    else()
+        # Not in the path, try using: python3 -m pytest
+        execute_process(
+            COMMAND ${Python3_EXECUTABLE} -m pytest --version
+            RESULT_VARIABLE PYTEST_MODULE_EXIT_CODE
+            ERROR_QUIET OUTPUT_QUIET
+        )
+
+        if(${PYTEST_MODULE_EXIT_CODE} EQUAL 0)
+            # pytest isn't in the path, but the Python 3 we found has it.
+            set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;pytest;-v")
+        else()
+            # pytest couldn't be found, verify that we can at least use: python3 -m unittest
+            execute_process(
+                COMMAND ${Python3_EXECUTABLE} -m unittest --help
+                RESULT_VARIABLE UNITTEST_MODULE_EXIT_CODE
+                ERROR_QUIET OUTPUT_QUIET
+            )
+
+            if(${UNITTEST_MODULE_EXIT_CODE} EQUAL 0)
+                # No pytest :-(, but we'll get by with unittest
+                message("Python 3 package 'pytest' is not installed for ${Python3_EXECUTABLE} and is not available in your PATH.")
+                message("Failed unit tests will be easier to read if you install pytest.")
+                message("Eg:  python3 -m pip install --user pytest")
+
+                set(PythonTest_COMMAND "${Python3_EXECUTABLE};-m;unittest;--verbose")
+            else()
+                # No unittest either!
+                # Some weird Python installations do exist that lack standard modules like unittest.
+                # Let's make sure these folks know the Python 3 install we found won't cut it.
+                message("Python 3 found: ${Python3_EXECUTABLE}, but it is missing the unittest module (wierd!).")
+                message(FATAL_ERROR "The tests won't work with this Python installation. You can disable the tests by reconfiguring with: -D ENABLE_TESTS=OFF")
+            endif()
+        endif()
+    endif()
+
+    # Check for valgrind. If it exists, we'll enable extra tests that use valgrind.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+        find_package(Valgrind)
+    endif()
+endif()
 
 # Checks for header files.
 include(CheckIncludeFile)
@@ -246,11 +305,34 @@ if(ENABLE_SHARED_LIB)
                   ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
         PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
+    # Always use '-fPIC'/'-fPIE' option for shared libraries.
+    set_property(TARGET bz2 PROPERTY POSITION_INDEPENDENT_CODE ON)
     set_target_properties(bz2 PROPERTIES
         COMPILE_FLAGS "${WARNCFLAGS}"
         VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION})
     install(TARGETS bz2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(FILES bzlib.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+    if(USE_OLD_SONAME)
+        # Hack to support the old libbz2.so.1.0 version by including an extra copy.
+        # Technically the old SONAME is not libtool compatible.
+        # This hack is to support binary compatibility with libbz2 in some distro packages.
+        if(UNIX AND NOT APPLE)
+            add_library(bz2_old_soname SHARED ${BZ2_RES})
+            target_sources(bz2_old_soname
+                PRIVATE   ${BZ2_SOURCES}
+                        ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
+                PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
+                INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h
+            )
+            set_target_properties(bz2_old_soname PROPERTIES
+                COMPILE_FLAGS "${WARNCFLAGS}"
+                VERSION ${LT_SOVERSION}.${LT_AGE} SOVERSION ${LT_SOVERSION}.${LT_AGE}
+                OUTPUT_NAME bz2
+            )
+            install(TARGETS bz2_old_soname DESTINATION ${CMAKE_INSTALL_LIBDIR})
+        endif()
+    endif()
 endif()
 
 if(ENABLE_STATIC_LIB)
@@ -328,7 +410,7 @@ if(ENABLE_APP)
 
 endif()
 
-if(Python3_FOUND)
+if(ENABLE_APP AND Python3_FOUND)
     enable_testing()
     add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND})
     add_subdirectory(tests)
@@ -336,7 +418,7 @@ endif()
 
 add_subdirectory(man)
 
-set(DOCGEN_EXECS xsltproc perl xmllint egrep pdfxmltex pdftops)
+set(DOCGEN_EXECS xsltproc perl xmllint grep pdfxmltex pdftops)
 
 if(ENABLE_DOCS)
     foreach(EXEC IN LISTS DOCGEN_EXECS)

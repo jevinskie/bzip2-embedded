@@ -7,7 +7,7 @@
    This file is part of bzip2/libbzip2, a program and library for
    lossless, block-sorting data compression.
 
-   bzip2/libbzip2 version 1.0.6 of 6 September 2010
+   bzip2/libbzip2 version 1.1.0 of 6 September 2010
    Copyright (C) 1996-2010 Julian Seward <jseward@acm.org>
 
    Please read the WARNING, DISCLAIMER and PATENTS sections in the
@@ -128,6 +128,13 @@
 
 #endif /* BZ_LCCWIN32 */
 
+#if _WIN32
+#define fileno          _fileno
+#define write           _write
+#define isatty          _isatty
+#define setmode         _setmode
+#define STDERR_FILENO   _fileno(stderr)
+#endif
 
 /*---------------------------------------------*/
 /*--
@@ -724,8 +731,8 @@ void panic ( const Char* s )
    fprintf ( stderr,
              "\n%s: PANIC -- internal consistency error:\n"
              "\t%s\n"
-             "\tThis is a BUG.  Please report it to me at:\n"
-             "\tjseward@acm.org\n",
+             "\tThis is a BUG.  Please report it at:\n"
+             "\thttps://gitlab.com/bzip2/bzip2/-/issues\n",
              progName, s );
    showFileNames();
    cleanUpAndFail( 3 );
@@ -791,10 +798,9 @@ void mySignalCatcher ( IntNative n )
 static
 void mySIGSEGVorSIGBUScatcher ( IntNative n )
 {
+   const char *msg;
    if (opMode == OM_Z)
-      fprintf (
-      stderr,
-      "\n%s: Caught a SIGSEGV or SIGBUS whilst compressing.\n"
+      msg = ": Caught a SIGSEGV or SIGBUS whilst compressing.\n"
       "\n"
       "   Possible causes are (most likely first):\n"
       "   (1) This computer has unreliable memory or cache hardware\n"
@@ -805,17 +811,14 @@ void mySIGSEGVorSIGBUScatcher ( IntNative n )
       "   The user's manual, Section 4.3, has more info on (1) and (2).\n"
       "   \n"
       "   If you suspect this is a bug in bzip2, or are unsure about (1)\n"
-      "   or (2), feel free to report it to me at: jseward@acm.org.\n"
+      "   or (2), report it at: https://gitlab.com/bzip2/bzip2/-/issues\n"
       "   Section 4.3 of the user's manual describes the info a useful\n"
       "   bug report should have.  If the manual is available on your\n"
       "   system, please try and read it before mailing me.  If you don't\n"
       "   have the manual or can't be bothered to read it, mail me anyway.\n"
-      "\n",
-      progName );
-      else
-      fprintf (
-      stderr,
-      "\n%s: Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
+      "\n";
+   else
+      msg = ": Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
       "\n"
       "   Possible causes are (most likely first):\n"
       "   (1) The compressed data is corrupted, and bzip2's usual checks\n"
@@ -828,18 +831,30 @@ void mySIGSEGVorSIGBUScatcher ( IntNative n )
       "   The user's manual, Section 4.3, has more info on (2) and (3).\n"
       "   \n"
       "   If you suspect this is a bug in bzip2, or are unsure about (2)\n"
-      "   or (3), feel free to report it to me at: jseward@acm.org.\n"
+      "   or (3), report it at: https://gitlab.com/bzip2/bzip2/-/issues\n"
       "   Section 4.3 of the user's manual describes the info a useful\n"
       "   bug report should have.  If the manual is available on your\n"
       "   system, please try and read it before mailing me.  If you don't\n"
       "   have the manual or can't be bothered to read it, mail me anyway.\n"
-      "\n",
-      progName );
+      "\n";
+   write ( STDERR_FILENO, "\n", 1 );
+   write ( STDERR_FILENO, progName, strlen ( progName ) );
+   write ( STDERR_FILENO, msg, strlen ( msg ) );
 
-   showFileNames();
-   if (opMode == OM_Z)
-      cleanUpAndFail( 3 ); else
-      { cadvise(); cleanUpAndFail( 2 ); }
+   msg = "\tInput file = ";
+   write ( STDERR_FILENO, msg, strlen (msg) );
+   write ( STDERR_FILENO, inName, strlen (inName) );
+   write ( STDERR_FILENO, "\n", 1 );
+   msg = "\tOutput file = ";
+   write ( STDERR_FILENO, msg, strlen (msg) );
+   write ( STDERR_FILENO, outName, strlen (outName) );
+   write ( STDERR_FILENO, "\n", 1 );
+
+   /* Don't call cleanupAndFail. If we ended up here something went
+      terribly wrong. Trying to clean up might fail spectacularly. */
+
+   if (opMode == OM_Z) setExit(3); else setExit(2);
+   _exit(exitValue);
 }
 
 
